@@ -1,4 +1,4 @@
-module github.com/oceanc80/tap-fitter
+module github.com/release-engineering/tap-fitter
 
 go 1.20
 
@@ -146,5 +146,3 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.3 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
-
-replace github.com/release-engineering/tap-fitter/pkg/generation => ./pkg/generation

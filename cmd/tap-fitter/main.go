@@ -3,19 +3,23 @@ package main
 import (
 	"fmt"
 
-	"github.com/oceanc80/tap-fitter/pkg/generation"
+	"github.com/release-engineering/tap-fitter/pkg/generation"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
+var (
+	compositePath string
+	catalogPath   string
+	provider      string
+)
+
 func newRootCmd() (*cobra.Command, error) {
-	var (
-		compositePath string
-		catalogPath   string
-	)
 	var rootCmd = &cobra.Command{
-		Short: "tap-fitter",
-		Long:  `tap-fitter reads a composite template to prepare a repository for a catalog production pipeline`,
+		Use:   "tap-fitter",
+		Short: "tap-fitter takes composite templates and outputs corresponding devfiles",
+		Long:  `tap-fitter reads a composite template and outputs corresponding devfiles to prepare a repository for a catalog production pipeline.
+It must be run from the destination repository to generate the devfiles in the correct locations.`,
 
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if catalogPath == "" || compositePath == "" {
@@ -24,6 +28,7 @@ func newRootCmd() (*cobra.Command, error) {
 			p := generation.TapFitterCompositeTemplateReader{
 				CompositePath: compositePath,
 				CatalogPath:   catalogPath,
+				Provider:      provider,
 			}
 			generators, err := p.Ingest(cmd.Context())
 			if err != nil {
@@ -39,9 +44,9 @@ func newRootCmd() (*cobra.Command, error) {
 			return nil
 		},
 	}
-	f := rootCmd.Flags()
-	f.StringVar(&compositePath, "composite-path", "", "the path to the composite template used for configuration (required if with-composite-template is set)")
-	f.StringVar(&catalogPath, "catalog-path", "", "the path/URL to the catalog template used for configuration (required if with-composite-template is set)")
+	rootCmd.Flags().StringVarP(&compositePath, "composite-path", "t", "", "[REQUIRED] the path to the composite template used for configuration")
+	rootCmd.Flags().StringVarP(&catalogPath, "catalog-path", "c", "", "[REQUIRED] the path/URL to the catalog template used for configuration")
+	rootCmd.Flags().StringVarP(&provider, "provider", "p", "tap-fitter", "the provider of the catalog")
 
 	return rootCmd, nil
 }
@@ -49,9 +54,9 @@ func newRootCmd() (*cobra.Command, error) {
 func main() {
 	cmd, err := newRootCmd()
 	if err != nil {
-		logrus.Panic(err)
+		logrus.Fatalf("Error constructing tap-fitter command: ", err)
 	}
 	if err := cmd.Execute(); err != nil {
-		logrus.Panic(err)
+		logrus.Fatalf("Error executing tap-fitter command: ", err)
 	}
 }
