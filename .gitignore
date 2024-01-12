@@ -6,6 +6,7 @@ vendor
 *.dll
 *.so
 *.dylib
+tap-fitter
 
 # Test binary, build with `go test -c`
 *.test

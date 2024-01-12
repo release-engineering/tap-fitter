@@ -14,6 +14,7 @@ import (
 type TapFitterCompositeTemplateReader struct {
 	CompositePath string
 	CatalogPath   string
+	Provider      string
 }
 
 func (p *TapFitterCompositeTemplateReader) Ingest(c context.Context) ([]*GenerateDevfile, error) {
@@ -59,19 +60,21 @@ func (p *TapFitterCompositeTemplateReader) Ingest(c context.Context) ([]*Generat
 	generators := make([]*GenerateDevfile, 0)
 	for _, catalog := range specs.CatalogSpec.Catalogs {
 		workdir := catalog.Destination.WorkingDir
-		// TODO: this assumes that the composite template generation has been run, so all paths exist
-		writerFile, err := os.OpenFile(filepath.Join(workdir+"devfile.yaml"), os.O_CREATE|os.O_WRONLY, 0644)
+		// Ensure all paths exist with wxr-xr-x perms
+		if err := os.MkdirAll(workdir, 0751); err != nil {
+			return nil, err
+		}
+		writerFile, err := os.OpenFile(filepath.Join(workdir, "devfile.yaml"), os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
 			return nil, err
 		}
 		// NOTE:  cannot defer closing the writer, since we delegate it to the caller
 
 		generator := &GenerateDevfile{
-			IndexDir: "catalog",
-			Name:     catalog.Name,
-			BuildCTX: catalog.Name,
-			// TODO: this should be a flag
-			Provider:    "tap-fitter",
+			IndexDir:    "catalog",
+			Name:        catalog.Name,
+			BuildCTX:    catalog.Name,
+			Provider:    p.Provider,
 			Writer:      writerFile,
 			CleanupFunc: writerFile.Close,
 		}

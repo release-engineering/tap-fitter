@@ -37,17 +37,7 @@ type GenerateDevfile struct {
 	CleanupFunc CleanupFuncType
 }
 
-func (g *GenerateDevfile) Generate() error {
-	t, err := template.New("devfile").Parse(devfileTmpl)
-	if err != nil {
-		// The template is hardcoded in the binary, so if
-		// there is a parse error, it was a programmer error.
-		panic(err)
-	}
-	return t.Execute(g.Writer, t)
-}
-
-func (i GenerateDevfile) Run() error {
+func (i GenerateDevfile) Generate() error {
 	if err := i.validate(); err != nil {
 		return err
 	}
