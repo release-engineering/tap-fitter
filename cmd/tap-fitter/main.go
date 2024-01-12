@@ -19,7 +19,7 @@ func newRootCmd() (*cobra.Command, error) {
 		Use:   "tap-fitter",
 		Short: "tap-fitter takes composite templates and outputs corresponding devfiles",
 		Long:  `tap-fitter reads a composite template and outputs corresponding devfiles to prepare a repository for a catalog production pipeline.
-It must be run from the destination repository to generate the devfiles in the correct locations.`,
+Note: because templates may use relative paths to related artifacts, tap-fitter should be run in the same location as input templates.`,
 
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if catalogPath == "" || compositePath == "" {

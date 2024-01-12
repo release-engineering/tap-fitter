@@ -11,11 +11,11 @@ To build the utility, run `make build` from the root directory of the tap-fitter
 ## Usage
 
 The `tap-fitter` command will ingest composite templates and generate corresponding devfiles.
-Note that because it uses relative paths to infer the destination directory to write the devfiles to, `tap-fitter` must be run from the destination directory that contains the catalog tree.
+Note: because templates may use relative paths to related artifacts, `tap-fitter` should be run in the same location as input templates.
 ```
 $ ./tap-fitter -h
 tap-fitter reads a composite template and outputs corresponding devfiles to prepare a repository for a catalog production pipeline.
-It must be run from the destination repository to generate the devfiles in the correct locations.
+Note: because templates may use relative paths to related artifacts, tap-fitter should be run in the same location as input templates.
 
 Usage:
   tap-fitter [flags]
