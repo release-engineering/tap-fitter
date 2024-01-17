@@ -1,0 +1,37 @@
+name: 'tap-fitter'
+description: 'Generate devfile(s) from composite template(s) in your repository'
+branding:
+  icon: 'code'
+  color: 'blue'
+inputs:
+  catalog-path:
+    description: 'The path to the catalog template to use for configuration'
+    required: true
+  composite-path:
+    description: 'The path to the composite template(s) to generate devfiles from'
+    required: true
+  provider:
+    description: 'The provider of the catalog'
+    required: false
+    default: 'tap-fitter'
+runs:
+  using: 'composite'
+  steps:
+    - shell: bash
+      id: tap-fitter
+      run: |
+        if [[ "${{ github.repository }}" == release-engineering/tap-fitter" && "${{ inputs.version }}" == "latest" ]]; then
+          echo "*** Installing tap-fitter from source ***"
+          go install .
+        else
+          INSTALL_CMD="go install"
+          if [[ "$(go version | cut -d' ' -f3 | cut -d'.' -f2 | grep -o -E '[0-9]+' | head -1)" -lt "16" ]]; then
+            INSTALL_CMD="go get"
+          fi
+          DIR=$(mktemp -d)
+          (cd ${DIR} && GO111MODULE=on ${INSTALL_CMD} github.com/release-engineering/tap-fitter/cmd/tap-fitter@${{ inputs.version }}) && rmdir ${DIR}
+        fi
+        set -x
+        GOPATH=$(go env GOPATH)
+        set +e
+        $GOPATH/bin/tap-fitter --catalog-path ${{ inputs.catalog-path }} --composite-path ${{ inputs.composite-path }} --provider ${{ input.provider }}
