@@ -81,5 +81,9 @@ catalogs
 
 ```
 
+## Schema Mapping
+The below example illustrates how the specs for the [composite-catalog](https://olm.operatorframework.io/docs/reference/catalog-templates/#olmcompositecatalogs) combine with options from the program and user to generate a devfile result.  Each configurable option has a numerical callout indicating origin, correlation, and output.
+![](tap-fitter-schema-fit.drawio.svg)
+
 ## Future work
 - Enable the use of explicit paths
